@@ -61,6 +61,8 @@ ELSEIF(APPLE)
 ENDIF()
 
 message(STATUS "Building GTSAM - shared: ${BUILD_SHARED_LIBS}")
+
+# wheel odometry and imu pim factor
 add_library(wio_factor_lib ${WIO_SOURCE})
 target_include_directories(wio_factor_lib PUBLIC ${GTSAM_INCLUDE_DIR})
 target_link_libraries(wio_factor_lib PUBLIC gtsam gtsam_unstable)
@@ -70,6 +72,20 @@ set_target_properties(wio_factor_lib PROPERTIES
     VERSION             ${wio_factor_version}
     SOVERSION           ${wio_factor_soversion})
 
+set(QCALIB_SOURCE 
+    src/rot_pim_factor.cpp)
+
+# calibration lib
+add_library(qcalib_factor_lib ${QCALIB_SOURCE})
+target_include_directories(qcalib_factor_lib PUBLIC ${GTSAM_INCLUDE_DIR})
+target_link_libraries(qcalib_factor_lib PUBLIC gtsam gtsam_unstable)
+set_target_properties(qcalib_factor_lib PROPERTIES
+    OUTPUT_NAME         qcalib_factor_lib
+    CLEAN_DIRECT_OUTPUT 1
+    VERSION             ${wio_factor_version}
+    SOVERSION           ${wio_factor_soversion})
+
+# bin 
 add_executable(wheel_imu_factor app/test_wheel_imu_factor.cpp)
 target_link_libraries(wheel_imu_factor gtsam wio_factor_lib)
 
